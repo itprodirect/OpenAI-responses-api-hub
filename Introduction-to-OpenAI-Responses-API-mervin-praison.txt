@@ -1,0 +1,364 @@
+Introduction to OpenAI Responses API
+open AI released really powerful tools
+one of which is responses API replacing
+chat completions API powering millions
+of AI applications and millions more
+applications are going to be built with
+responses API so it's vital to learn the
+basics if you want to build any AA
+applic and why responses API is
+important the chat completions API
+Why Responses API is important
+doesn't support file search or computer
+use but this rest responses API supports
+file search computer use soon code
+interpreter will be available that's
+going to simplify the process file
+search is for rag computer used for
+controlling your computer and
+automatically automate repetitive task
+code interpreter is to create the code
+and run the code so these all things can
+be automated so that is the power of
+Overview of tutorial structure
+respons API and I'm going to teach you
+step by step a beginner's tutorial I'll
+put all the code in the description
+below so you are able to follow through
+at the end we'll be creating a chatbot
+like this where you ask any question and
+it is able to answer also we'll be able
+to see how we can track every single
+interaction using open AI platform this
+is important so that you can analyze how
+these AI models are responding and
+change your question based on that I'm
+going to take you through every bit of
+code run it and explain it clearly let's
+Mention of Nvidia GTC conference
+get started before that I want to tell
+you about Nvidia GTC conference
+happening March 17th to 21st you have
+various sessions and you can learn a lot
+and here are few how to build an agentic
+AI system building Future Ready AI with
+agents AI agents in production best
+practices to implement how to onboard
+your team of AI agents and much more you
+can even attend that virtually so I'll
+put the link in the description for you
+to sign up continuing with r sponsor API
+Difference between Chat Completions and Responses API
+I want to show you the difference so
+chat completions create is the previous
+way of calling this API and using this
+you are able to create AI powered
+application and custom chatbot and this
+will simplify your process so using
+responses API is very simple just
+replace chat completions with responses
+and it should work without any errors so
+let's do this step by step in this we'll
+Tutorial roadmap
+see how you can create a basic chatbot
+then a chatbot which can analyze m image
+then a chatbot with pre-build tool such
+as web search tool and then create a
+Custom Tool and finally how to stream
+the response to make it super fast
+starting with Basics a basic chatbot
+Basic chatbot setup
+first in your terminal which you can
+find that from your computer they pip
+install open Ai geopy and gradio open AI
+is the main package goopy is for
+creating a custom tool and integrating
+that with the chatbot gradio is for user
+interface so after running this just
+click enter now it's installing all the
+required packages as a basic requirement
+you need python to be installed in your
+computer by default Mac and Linux
+machines come with python so next we
+need to generate API key which you can
+generate from platform. open.com so
+enter your opena API key like this and
+then click enter next let's create a
+file called app.py so even in your code
+editor of your choice you can right
+click and create a new file app.py and
+then click enter now inside the file
+Creating a simple chatbot with code
+from open AI import open AI then client
+equals open AI then client. responses.
+create then providing the model that is
+gp40 that is the brain behind the chat
+bot then we got the input write a one
+sentence bedtime story about a unicorn a
+slight difference you see here compared
+to how it was before before it was
+messages now it's called input so just
+remember that so old version chat
+completions is with messages and the
+latest responses API is with input and
+next just printing the response that's
+it just this bit of code and you have
+successfully created a terminal based
+chatbot which can answer questions so
+this is the question or task now I'm
+going to run this code now coming back
+to my terminal in the same folder just
+going to run Python app.py and then
+click enter now here is the Unicorn
+story which we asked for WR at one sance
+bedtime story about unicorn here is the
+general respon response this is for chat
+completions and this is for responses
+and we used output text that's why we
+got the answer from here and you can see
+that here output in platform. open.com
+you should be able to see your logs if
+you have enabled that in the responses
+section so you clearly know the question
+you asked and the answer you got so we
+completed the basic setup now we're
+Setting up user interface with Gradio
+going to set up a user interface for
+this same channel so I modifi the codee
+slightly just import gradio as G are
+then created a function ask Ai and the
+question and that goes as a variable and
+put the whole code inside this ask AI
+function then I'm paing this ask AI
+function here FN ask AI so this is a
+gradio do interface so literally this
+one function will create a UI for you as
+simple as that and you are telling I
+need a input I need an output the input
+will be passed as the question and we
+get the output as the response this this
+is the title for our chatbot and demo.
+launch so literally this bit of code and
+you have created a chatbot with frontend
+user interface now I'm going to run this
+code in your terminal python U.P and
+then click in and here is the URL going
+to open it and here is the user
+interface I'm going to say write a movie
+script about Tom and jurry and then
+clicking submit and here is the answer
+so it's a movie script the title is Tom
+and Jerry Chase through time and the
+genre animated comedy and here you got
+the script written by the AI if you want
+to fine-tune you should be able to
+fine-tune this and this is really nice
+now you have successfully created
+chatbot with user interface next I'm
+Image analysis capabilities
+going to show you how you can analyze
+images with this response APM I just
+pressed contrl C to cancel the previous
+user interface and here is the code for
+analyzing image so it's same as before
+we are adding input and the content so
+we are giving like a formatted Json as a
+user I'm asking a question what teams
+are playing in this image and again as a
+user I'm I'm providing an input image
+that is the image from Wikipedia so if I
+open this here is the image and the AI
+is going to identify what teams are
+playing in this image so I'm going to
+run this code python image. piy that's
+where my code is and here is the answer
+the teams playing in the image are
+Cleveland and Brooklyn that is really
+nice so now you have created a chatbot
+which has the capability to analy image
+so provide whatever image you want and
+it should be able to analyze that next
+Using built-in tools (web search, file search)
+let's see how you can create tools or
+use inbuilt tools so we got inbu tools
+such as web search tool file Search tool
+and computer use tool so web search is
+for searching web file search is for
+searching contents within a file and
+computer used to control your computer
+so the first step I'm going to show you
+about web search so just adding tools
+line here with the type web search qu
+preview that's it just this one line and
+you have added an inbuilt tool and the
+question which we are going to ask give
+me two AI news story from today in two
+sentence and then printing the rest now
+I'm going to run this code python tools.
+piy in your terminal and here is the
+answer searching the internet and giving
+me the result that's really nice and of
+course you can add UI to this to use
+file search you can upload your custom
+File search and vector database setup
+data or custom PDF to platform. opena
+under storage they create a vector store
+once after you create you have an option
+to upload a file click on add files then
+you can click upload and here I'm
+uploading a file and attach now I can
+use this ID and add the ID here and same
+as before the tools the type is file
+search here's the database that is the
+vector database and ask question so this
+is literally rag rag in just few lines
+so we are asking question based on the
+uploaded PDF or uploaded mult multiple
+PDF so my question is tell me about
+graph Rag and now I'm going to run this
+code python R.P and here is the response
+it contains multiple things one thing is
+that it's agent rag which means based on
+your question it automatically added
+multiple queries this is called query
+decomposition then each of this query is
+searched against the uploaded data and
+you can see is able to identify the
+actual file which we uploaded it
+retrieves relevant information then it
+gives the response what is graph rag
+that is really nice by creating a user
+interface you should be able to display
+this data in the UI I will cover
+computer use in a completely separate
+video because it contains multiple lines
+of code and you can literally automate
+any of your repetitive task or you can
+just speak to your computer to make
+those work for you up until now we so
+Creating custom tools
+about inbuild tools but now we need to
+create custom tools let's see how we can
+do that this is important if you need to
+create AI agents so here just few extra
+bits which I need to explain so the way
+the custom tools work is when we ask a
+question give me a weather data the
+model or the AI knows there's a tool
+called get weather and it uses that tool
+to get the weather and finally it
+Returns the response so now we are going
+Building a weather tool example
+to show how we can do this in code so
+first step we need to create a custom
+tool so that is the get weather function
+so by just posing the location
+it should be automatically able to
+return the weather and we are using gey
+to get the geolocation and open meteor
+to get the for cost then we need to tell
+AI what this tool is about that's when
+we have tool definition here we are
+mentioning it's a get weather tool and
+we need to provide a location so that it
+can return the current temperature of a
+given location so that the description
+so if we ask to this AI model give me
+the weather of a particular location
+then it's going to use this tool to get
+the relevant weather then the third step
+here we are asking a question same as
+before what is the weather like in Paris
+today and that's is the question there's
+the input so we are passing that as an
+input here and then we are printing the
+response so at this time the model
+realizes that it need to find the
+weather data and also it knows there's a
+tool already available so it's going to
+call the tool it's going to mainly
+return the location that is Paris so we
+are getting the Paris this will have
+Paris and we are passing that Paris to
+get weather so get weather Paris and
+it'll automatically print the weather
+here and we are passing sending the
+result back to the AA model together
+with previous inputs so second time we
+are calling the AA model to get the
+final response so basically we are
+calling the AA model two times one here
+and one here first just the basic
+question and it's going to use the tool
+call then the output from the function
+result results is sent back to the model
+so the output from the function will
+look like this temperature 14 so as a
+normal user if there's brackets colon
+It's like more programmatic it doesn't
+look natural so the second response what
+it does it converts the programmatic or
+the Json response into a natural
+language process that's why we need AI
+model for the second time so that's what
+we've done here second time we are
+calling the a model with the output that
+is the Json output so overall six steps
+and and I'm going to run this I'll put
+the code in the description so you can
+clearly copy and paste it and run it
+python custom tools and you can see here
+is a response from the first time you
+call the model and it gives the function
+to call that is get weather and the
+location that is Paris front and we are
+running the function get weather and
+pausing the parameter Paris fronts to
+get this result then we are pausing this
+result that is the Json response to the
+model again for the response to and
+getting this natural language response
+that's it and finally how we can make
+Streaming responses for faster feedback
+this a FAL response that's when we have
+stream equals true so it's same as
+before responses. creates with the model
+name have an input as a user I'm asking
+a question or a task to do write a story
+with thousand words then we are using
+the for Loop to keep on printing as and
+when the model generates the response so
+I'll show you in a bit so this is all
+the code now I'm going to run this
+Python stream. piy and you can see the
+response here it's slowly getting
+printed out as an when it gets generated
+and that is really nice now you can
+create application with the streaming
+response to keep your visitor engaged
+and I'm really impressed about all these
+updates one Final Extra free bit which I
+Using LM Studio locally
+want to show you if you are using LM
+Studio you should be able to clearly use
+the base URL like this with a fake API
+key let's say model Gemma 3 and you
+should be able to do this but this is a
+work in progress probably in the next
+few weeks this will work in this way you
+are not using any API key or external
+Source all this is running locally and
+privately on your computer and this is
+LM studio and you can download any
+models from here locally on your
+computer and I'm really excited about
+this do let me know in the comments
+below what you think about this
+considering you already like these new
+AI features I also created another video
+about agents SDK which you can run
+completely locally on your computer that
+is multiple AI agents completing a
+complex task for free and I highly
+recommend for you to watch and I will
+see you there
