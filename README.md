@@ -30,3 +30,48 @@ openai-responses-api-hub/
 ├── LICENSE                   # Project license
 ├── README.md                 # You are here!
 └── requirements.txt          # Python dependencies
+```
+
+## 🔧 Installation
+
+Clone the repository and install dependencies:
+
+```bash
+git clone https://github.com/your-user/openai-responses-api-hub.git
+cd openai-responses-api-hub
+pip install -r requirements.txt
+```
+
+## 🛠️ Environment Setup
+
+Create a `.env` file at the project root and add your OpenAI API key:
+
+```bash
+OPENAI_API_KEY=your-api-key-here
+```
+
+Both the notebooks and `utils/openai_client.py` load this key automatically via `python-dotenv`.
+
+## 📓 Running the Sample Notebooks
+
+Start Jupyter and open the notebooks inside the `notebooks` folder:
+
+```bash
+jupyter notebook notebooks/01_basic_chatbot.ipynb
+```
+
+Work through each notebook to explore different API capabilities.
+
+## 💡 Usage Example
+
+The helper `get_response` function in `utils/openai_client.py` makes it easy to
+query the API from your own scripts:
+
+```python
+from utils.openai_client import get_response
+
+reply = get_response("Hello, world!")
+print(reply)
+```
+
+See the notebooks for more detailed examples and workflows.
