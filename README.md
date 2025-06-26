@@ -41,6 +41,7 @@ git clone https://github.com/your-user/openai-responses-api-hub.git
 cd openai-responses-api-hub
 pip install -r requirements.txt
 ```
+This command installs the exact package versions listed in `requirements.txt`.
 
 ## 🛠️ Environment Setup
 
