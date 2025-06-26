@@ -75,3 +75,7 @@ print(reply)
 ```
 
 See the notebooks for more detailed examples and workflows.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
