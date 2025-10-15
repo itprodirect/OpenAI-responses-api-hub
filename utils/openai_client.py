@@ -12,6 +12,9 @@ def get_response(input_text: str, model: str = "gpt-4o") -> str:
     """
     Sends a prompt to the OpenAI Responses API and returns the assistant's output text.
     """
+    if not OPENAI_API_KEY:
+        raise ValueError("Missing OPENAI_API_KEY environment variable.")
+
     headers = {
         "Authorization": f"Bearer {OPENAI_API_KEY}",
         "Content-Type": "application/json"
