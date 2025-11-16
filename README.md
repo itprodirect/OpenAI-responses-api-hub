@@ -65,14 +65,20 @@ Work through each notebook to explore different API capabilities.
 
 ## 💡 Usage Example
 
-The helper `get_response` function in `utils/openai_client.py` makes it easy to
-query the API from your own scripts:
+The helper `get_response` function in `utils/openai_client.py` now wraps the
+latest `OpenAI` SDK, so you can opt into tools, modalities, or streaming without
+rewriting your scripts:
 
 ```python
 from utils.openai_client import get_response
 
-reply = get_response("Hello, world!")
+# Basic, blocking call
+reply = get_response("Summarize the OpenAI Responses API in 2 sentences.")
 print(reply)
+
+# Stream deltas for a faster-feeling UI experience
+for chunk in get_response("Write a limerick about streaming text", stream=True):
+    print(chunk, end="", flush=True)
 ```
 
 See the notebooks for more detailed examples and workflows.
