@@ -4,6 +4,8 @@ A hands-on, methodical hub for learning and mastering the **OpenAI Responses API
 
 This repo intentionally evolves one notebook at a time. Each notebook builds on a consistent structure and introduces a new capability — from basic chat to streaming, structured outputs, tools, and eventually full RAG pipelines.
 
+> ✅ **2026 upgrade pass completed:** utilities are now modularized for reuse in other projects, with dedicated helpers for streaming and strict JSON schema outputs via the Responses API.
+
 ---
 
 # 🚀 Repo Purpose
@@ -34,9 +36,13 @@ openai-responses-api-hub/
 │   └── (future notebooks follow same format)
 │
 ├── utils/                    # Centralized helpers imported by all notebooks
-│   ├── openai_client.py      # Canonical OpenAI client creation
+│   ├── openai_client.py      # Cached + testable OpenAI client helpers
+│   ├── responses_api.py      # Reusable Responses API helpers (text, stream, JSON schema)
 │   ├── models.py             # Curated model catalog + selector
-│   └── config.py             # Handles DEFAULT_MODEL via env + fallback
+│   └── config.py             # Handles DEFAULT_MODEL via env + safe fallback
+│
+├── docs/
+│   └── UPGRADE_REVIEW.md     # Deep-dive review findings + upgrade notes
 │
 ├── assets/                   # Images, sample docs, misc resources
 ├── .env                      # Local secrets (NOT committed)
@@ -54,18 +60,22 @@ The `utils/` folder is the backbone of this repo. All notebooks import from here
 
 ## `utils/openai_client.py`
 
-Centralizes creation of the `OpenAI()` client.
+Centralizes creation of the `OpenAI()` client with project-safe defaults.
 
 * Automatically loads `.env`
-* Ensures **one consistent client** across notebooks
-* Encourages best practices for API usage
+* Uses a cached shared client (`get_openai_client`)
+* Supports explicit multi-key/test clients (`build_openai_client`)
 
-**Imported as:**
+---
 
-```python
-from utils.openai_client import get_openai_client
-client = get_openai_client()
-```
+## `utils/responses_api.py`
+
+Modular Responses API helpers you can reuse in notebooks, apps, and services:
+
+* `create_text_response(...)`
+* `create_streaming_text_response(...)`
+* `create_json_response(...)` with strict JSON schema
+* low-level helpers for extraction/stream delta parsing
 
 ---
 
@@ -96,9 +106,22 @@ from utils.models import list_recommended_models, choose_default_model, DEFAULT_
 Defines how `DEFAULT_MODEL` is chosen:
 
 * If `OPENAI_DEFAULT_MODEL` exists in the `.env`, use it
-* Otherwise fallback to `choose_default_model("fast")`
+* Otherwise try `choose_default_model("fast")`
+* If offline / unavailable, gracefully fallback to `gpt-4.1-mini`
 
-This gives you predictable behavior across notebooks.
+This keeps imports stable in local development and notebook authoring workflows.
+
+
+---
+
+# 🆕 Most Useful Responses API Upgrades in this Repo
+
+* **Streaming-first helpers** for incremental output rendering.
+* **Strict structured outputs** via JSON schema wrapper helper.
+* **Composable helper signatures** (`**extra_params`) so new API features can be adopted quickly.
+* **Centralized response text extraction** for cleaner notebook code.
+
+For the full deep-dive review and rationale, see `docs/UPGRADE_REVIEW.md`.
 
 ---
 
