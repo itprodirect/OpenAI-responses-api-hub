@@ -1,6 +1,6 @@
-openai>=1.0.0
-gradio
+openai>=1.40.0
 python-dotenv==1.0.1
 pandas
 jupyter
 ipykernel
+gradio
