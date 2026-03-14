@@ -24,6 +24,7 @@ openai-responses-api-hub/
 |   |-- 01_basic_chatbot.ipynb
 |   |-- 02_tools_and_reasoning.ipynb
 |   |-- 03_structured_outputs.ipynb
+|   |-- 04_multi_step_tools.ipynb
 |   `-- test_openai_connection.ipynb
 |-- utils/
 |   |-- openai_client.py
@@ -95,13 +96,20 @@ openai-responses-api-hub/
 - pandas-friendly action-item tables
 - second example for support-ticket triage
 
+`04_multi_step_tools.ipynb`
+
+- shared `create_function_tool_response(...)` workflow
+- multiple custom Python tools in one agent-style task
+- tool registry plus deterministic mock business data
+- final business answer generated after tool execution
+
 ## Roadmap
 
 The highest-value next notebooks are:
 
-1. Richer multi-tool workflows with tool execution loops
-2. File search and a small RAG example
-3. A lightweight model explorer or small app surface for demos
+1. File search and a small RAG example
+2. A lightweight model explorer or small app surface for demos
+3. More structured-output patterns, including validation failure handling
 
 ## Local Setup
 
@@ -129,6 +137,7 @@ Run notebooks:
 ```bash
 jupyter notebook notebooks/01_basic_chatbot.ipynb
 jupyter notebook notebooks/03_structured_outputs.ipynb
+jupyter notebook notebooks/04_multi_step_tools.ipynb
 ```
 
 ## Example

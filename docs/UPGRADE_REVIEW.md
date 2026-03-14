@@ -61,6 +61,11 @@ This supports reusable patterns across notebooks, scripts, and future services.
 - Notebook `03_structured_outputs.ipynb` demonstrates strict JSON schema extraction.
 - The notebook also shows how to move nested model output into pandas-friendly tables.
 
+### 6) The curriculum now includes reusable function-tool loops
+
+- Notebook `04_multi_step_tools.ipynb` demonstrates multiple custom tools in one workflow.
+- The notebook teaches the shared helper rather than a notebook-specific loop implementation.
+
 ## Most useful Responses API updates now reflected in this repo
 
 1. **Streaming-first utility pattern**
@@ -80,6 +85,6 @@ This supports reusable patterns across notebooks, scripts, and future services.
 
 ## Suggested next upgrades
 
-- Add a dedicated notebook on function-tool loops and multi-step workflows.
 - Add a file-search or mini-RAG notebook tied to a small sample document set.
 - Add lightweight mocked tests for more edge cases around tool outputs and validation failures.
+- Add a compact demo surface that turns one of the notebooks into a small app.
