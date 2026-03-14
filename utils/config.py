@@ -4,7 +4,11 @@ from __future__ import annotations
 
 import os
 
+from dotenv import load_dotenv
+
 from .models import choose_default_model
+
+load_dotenv()
 
 
 def get_default_model(preference: str = "fast") -> str:

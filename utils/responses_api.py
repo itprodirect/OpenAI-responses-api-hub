@@ -16,6 +16,10 @@ ResponseInput = Union[str, List[Dict[str, Any]]]
 def extract_output_text(response: Any) -> str:
     """Safely collect concatenated output text from a Responses API payload."""
 
+    output_text = getattr(response, "output_text", None)
+    if isinstance(output_text, str) and output_text:
+        return output_text
+
     chunks: List[str] = []
     for item in getattr(response, "output", []) or []:
         for content in getattr(item, "content", []) or []:
@@ -33,12 +37,20 @@ def extract_output_text(response: Any) -> str:
 def stream_text_deltas(stream: Any) -> Generator[str, None, None]:
     """Yield text deltas from a streaming Responses call."""
 
+    emitted_text = False
+
     with stream as response_stream:
         for event in response_stream:
             if event.type == "response.output_text.delta":
+                emitted_text = True
                 yield event.delta
             elif event.type == "response.error":
                 raise RuntimeError(event.error)
+
+        final_response = response_stream.get_final_response()
+        tail = extract_output_text(final_response)
+        if tail and not emitted_text:
+            yield tail
 
 
 def create_text_response(

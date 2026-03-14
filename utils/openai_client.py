@@ -41,26 +41,29 @@ def build_openai_client(api_key: str) -> OpenAI:
 def get_response(
     input_text: Any,
     *,
-    model: str = "gpt-4.1-mini",
+    model: Optional[str] = None,
     stream: bool = False,
     client: Optional[OpenAI] = None,
     **extra_params: Any,
 ) -> Any:
     """Backwards-compatible response helper used by existing notebooks."""
 
+    from .config import DEFAULT_MODEL
     from .responses_api import create_streaming_text_response, create_text_response
+
+    resolved_model = model or DEFAULT_MODEL
 
     if stream:
         return create_streaming_text_response(
             input_text,
-            model=model,
+            model=resolved_model,
             client=client,
             **extra_params,
         )
 
     return create_text_response(
         input_text,
-        model=model,
+        model=resolved_model,
         client=client,
         **extra_params,
     )

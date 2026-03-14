@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 from openai import OpenAI
 
@@ -46,14 +46,26 @@ def list_raw_models(client: Optional[OpenAI] = None) -> List[str]:
     return [model.id for model in models_page.data]
 
 
-def list_recommended_models(client: Optional[OpenAI] = None) -> Dict[str, Dict[str, object]]:
-    """Return recommended models with availability annotations."""
+def list_recommended_models(
+    client: Optional[OpenAI] = None,
+    *,
+    validate_availability: bool = False,
+) -> Dict[str, Dict[str, Any]]:
+    """Return the curated model catalog with optional availability annotations."""
 
-    available = set(list_raw_models(client=client))
-    result: Dict[str, Dict[str, object]] = {}
+    available = None
+    if validate_availability:
+        try:
+            available = set(list_raw_models(client=client))
+        except Exception:
+            available = None
 
+    result: Dict[str, Dict[str, Any]] = {}
     for model_id, meta in RECOMMENDED_MODELS.items():
-        result[model_id] = {**meta, "available": model_id in available}
+        result[model_id] = {
+            **meta,
+            "available": None if available is None else model_id in available,
+        }
 
     return result
 
@@ -63,14 +75,19 @@ def choose_default_model(
 ) -> str:
     """Pick a preferred model category, then gracefully fall back."""
 
-    models = list_recommended_models(client=client)
+    if client is not None:
+        models = list_recommended_models(client=client, validate_availability=True)
 
-    for model_id, meta in models.items():
-        if meta["category"] == preference and bool(meta["available"]):
-            return model_id
+        for model_id, meta in models.items():
+            if meta["category"] == preference and bool(meta["available"]):
+                return model_id
 
-    for model_id, meta in models.items():
-        if bool(meta["available"]):
+        for model_id, meta in models.items():
+            if bool(meta["available"]):
+                return model_id
+
+    for model_id, meta in RECOMMENDED_MODELS.items():
+        if meta["category"] == preference:
             return model_id
 
     # Last-resort fallback for local development without API access.
