@@ -55,6 +55,8 @@ openai-responses-api-hub/
 - `create_text_response(...)`
 - `create_streaming_text_response(...)`
 - `create_json_response(...)`
+- `invoke_function_tool_calls(...)`
+- `create_function_tool_response(...)`
 - `extract_output_text(...)`
 - `stream_text_deltas(...)`
 

@@ -3,8 +3,10 @@ from types import SimpleNamespace
 from unittest.mock import patch
 
 from utils.responses_api import (
+    create_function_tool_response,
     create_json_response,
     extract_output_text,
+    invoke_function_tool_calls,
     stream_text_deltas,
 )
 
@@ -28,6 +30,121 @@ class FakeStream:
 
 
 class ResponsesApiTests(unittest.TestCase):
+    def test_invoke_function_tool_calls_serializes_results(self) -> None:
+        response = SimpleNamespace(
+            output=[
+                SimpleNamespace(
+                    type="function_call",
+                    name="lookup_account",
+                    call_id="call_1",
+                    arguments='{"account_id": 7}',
+                )
+            ]
+        )
+
+        outputs = invoke_function_tool_calls(
+            response,
+            {"lookup_account": lambda account_id: {"account_id": account_id, "status": "active"}},
+        )
+
+        self.assertEqual(
+            outputs,
+            [
+                {
+                    "type": "function_call_output",
+                    "call_id": "call_1",
+                    "output": '{"account_id": 7, "status": "active"}',
+                }
+            ],
+        )
+
+    def test_create_function_tool_response_continues_until_final_answer(self) -> None:
+        initial_response = SimpleNamespace(
+            id="resp_1",
+            output=[
+                SimpleNamespace(
+                    type="function_call",
+                    name="basic_calculator",
+                    call_id="call_1",
+                    arguments='{"operation": "add", "a": 2, "b": 3}',
+                )
+            ],
+        )
+        final_response = SimpleNamespace(id="resp_2", output_text="The answer is 5.")
+        calls = []
+
+        class FakeResponsesAPI:
+            def create(self, **kwargs):
+                calls.append(kwargs)
+                return initial_response if len(calls) == 1 else final_response
+
+        fake_client = SimpleNamespace(responses=FakeResponsesAPI())
+        tools = [
+            {
+                "type": "function",
+                "name": "basic_calculator",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "operation": {"type": "string"},
+                        "a": {"type": "number"},
+                        "b": {"type": "number"},
+                    },
+                    "required": ["operation", "a", "b"],
+                    "additionalProperties": False,
+                },
+            }
+        ]
+
+        def basic_calculator(operation: str, a: float, b: float) -> float:
+            if operation == "add":
+                return a + b
+            raise ValueError("unsupported")
+
+        result = create_function_tool_response(
+            "What is 2 + 3?",
+            model="gpt-4.1-mini",
+            tools=tools,
+            tool_functions={"basic_calculator": basic_calculator},
+            client=fake_client,
+        )
+
+        self.assertIs(result, final_response)
+        self.assertEqual(len(calls), 2)
+        self.assertEqual(calls[0]["input"], "What is 2 + 3?")
+        self.assertEqual(calls[1]["previous_response_id"], "resp_1")
+        self.assertEqual(
+            calls[1]["input"],
+            [
+                {
+                    "type": "function_call_output",
+                    "call_id": "call_1",
+                    "output": "5",
+                }
+            ],
+        )
+
+    def test_invoke_function_tool_calls_captures_tool_errors(self) -> None:
+        response = SimpleNamespace(
+            output=[
+                SimpleNamespace(
+                    type="function_call",
+                    name="divide",
+                    call_id="call_2",
+                    arguments='{"a": 4, "b": 0}',
+                )
+            ]
+        )
+
+        def divide(a: float, b: float) -> float:
+            return a / b
+
+        outputs = invoke_function_tool_calls(response, {"divide": divide})
+
+        self.assertEqual(outputs[0]["type"], "function_call_output")
+        self.assertEqual(outputs[0]["call_id"], "call_2")
+        self.assertIn("error", outputs[0]["output"])
+
     def test_create_json_response_uses_strict_schema_and_parses_result(self) -> None:
         schema = {
             "type": "object",

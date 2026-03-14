@@ -4,13 +4,14 @@ from __future__ import annotations
 
 import json
 from collections.abc import Generator, Iterable
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Callable, Dict, List, Mapping, Optional, Union
 
 from openai import OpenAI
 
 from .openai_client import get_openai_client
 
 ResponseInput = Union[str, List[Dict[str, Any]]]
+ToolFunctionMap = Mapping[str, Callable[..., Any]]
 
 
 def extract_output_text(response: Any) -> str:
@@ -121,3 +122,78 @@ def create_json_response(
         **extra_params,
     )
     return json.loads(text)
+
+
+def invoke_function_tool_calls(
+    response: Any,
+    tool_functions: ToolFunctionMap,
+) -> List[Dict[str, Any]]:
+    """Execute function calls from a response and format continuation inputs."""
+
+    outputs: List[Dict[str, Any]] = []
+
+    for item in getattr(response, "output", []) or []:
+        if getattr(item, "type", None) != "function_call":
+            continue
+
+        tool_name = getattr(item, "name", None)
+        if tool_name not in tool_functions:
+            raise KeyError(f"No Python tool registered for function call: {tool_name!r}")
+
+        arguments = json.loads(getattr(item, "arguments", None) or "{}")
+
+        try:
+            result = tool_functions[tool_name](**arguments)
+            output_text = (
+                result if isinstance(result, str) else json.dumps(result, default=str)
+            )
+        except Exception as exc:
+            output_text = json.dumps({"error": str(exc)})
+
+        outputs.append(
+            {
+                "type": "function_call_output",
+                "call_id": getattr(item, "call_id"),
+                "output": output_text,
+            }
+        )
+
+    return outputs
+
+
+def create_function_tool_response(
+    input_text: ResponseInput,
+    *,
+    model: str,
+    tools: List[Dict[str, Any]],
+    tool_functions: ToolFunctionMap,
+    client: Optional[OpenAI] = None,
+    max_rounds: int = 5,
+    **extra_params: Any,
+) -> Any:
+    """Run a simple Responses API function-tool loop and return the final response."""
+
+    active_client = client or get_openai_client()
+    response = active_client.responses.create(
+        model=model,
+        input=input_text,
+        tools=tools,
+        **extra_params,
+    )
+
+    for _ in range(max_rounds):
+        tool_outputs = invoke_function_tool_calls(response, tool_functions)
+        if not tool_outputs:
+            return response
+
+        response = active_client.responses.create(
+            model=model,
+            previous_response_id=getattr(response, "id"),
+            input=tool_outputs,
+            tools=tools,
+            **extra_params,
+        )
+
+    raise RuntimeError(
+        f"Tool loop exceeded max_rounds={max_rounds} without reaching a final response."
+    )

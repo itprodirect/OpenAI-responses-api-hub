@@ -6,7 +6,7 @@ This document captures what was reviewed in the original starter repo and what w
 
 1. **Import-time API key failure in `utils/openai_client.py`**
    - The module raised an exception immediately when `OPENAI_API_KEY` was missing.
-   - This made local editing/testing brittle and broke imports in offline environments.
+   - This made local editing and testing brittle and broke imports in offline environments.
 
 2. **Import-time network dependency in model selection**
    - `utils/config.py` imported and executed `choose_default_model("fast")`, which could trigger a network call at import time.
@@ -18,38 +18,48 @@ This document captures what was reviewed in the original starter repo and what w
 4. **No first-class helper for structured JSON outputs**
    - The repo roadmap discussed structured outputs but the utilities lacked a reusable JSON schema helper.
 
+5. **No reusable function-tool loop**
+   - Notebook examples could show tool calls, but there was no shared helper for the standard `function_call -> execute -> continue response` pattern.
+
 ## Upgrades implemented
 
 ### 1) Client management was made modular and resilient
 
-- Added `get_api_key()` for explicit key resolution + clear error messaging.
+- Added `get_api_key()` for explicit key resolution and clearer error messaging.
 - Added cached `get_openai_client()` for consistent client reuse.
-- Added `build_openai_client()` for multi-key/testing scenarios.
+- Added `build_openai_client()` for multi-key and testing scenarios.
 
 ### 2) Responses API building blocks were extracted into a dedicated module
 
-New `utils/responses_api.py` provides:
+`utils/responses_api.py` now provides:
 
 - `create_text_response(...)`
 - `create_streaming_text_response(...)`
-- `create_json_response(...)` (strict JSON schema format)
+- `create_json_response(...)`
+- `invoke_function_tool_calls(...)`
+- `create_function_tool_response(...)`
 - `extract_output_text(...)`
 - `stream_text_deltas(...)`
 
-This now supports reusable patterns across notebooks, scripts, and future services.
+This supports reusable patterns across notebooks, scripts, and future services.
 
 ### 3) Model utilities were refreshed for current project portability
 
 - `utils/models.py` no longer instantiates an OpenAI client at import time.
 - Functions accept optional client injection for composability.
-- Curated model set expanded for audio/transcription and modern usage categories.
+- The curated model set covers fast, quality, reasoning, audio, and image use cases.
 
-### 4) Configuration defaulting is now safe for local/offline workflows
+### 4) Configuration defaulting is now safe for local and offline workflows
 
 - `get_default_model()` now:
-  1. honors `OPENAI_DEFAULT_MODEL`,
-  2. attempts dynamic selection,
-  3. gracefully falls back without breaking imports.
+  1. honors `OPENAI_DEFAULT_MODEL`
+  2. attempts dynamic selection when available
+  3. gracefully falls back without breaking imports
+
+### 5) The curriculum now includes structured outputs
+
+- Notebook `03_structured_outputs.ipynb` demonstrates strict JSON schema extraction.
+- The notebook also shows how to move nested model output into pandas-friendly tables.
 
 ## Most useful Responses API updates now reflected in this repo
 
@@ -59,14 +69,17 @@ This now supports reusable patterns across notebooks, scripts, and future servic
 2. **Structured outputs with strict JSON Schema**
    - A clean helper that demonstrates schema-controlled output parsing.
 
-3. **Cleaner response parsing abstraction**
+3. **Reusable function tool loops**
+   - Shared helpers now cover `function_call -> execute -> continue response` flows.
+
+4. **Cleaner response parsing abstraction**
    - Centralized text extraction that works across multi-content output payloads.
 
-4. **Composable request surface**
+5. **Composable request surface**
    - Helpers forward additional parameters (`**extra_params`) so new API capabilities can be adopted without refactoring core utility signatures.
 
-## Suggested next upgrades (optional)
+## Suggested next upgrades
 
-- Add a dedicated notebook on strict schema workflows and validation failures.
-- Add a tool-calling loop helper (`function_call` → execute → continue response) for production-style agents.
-- Add lightweight unit tests with mocked OpenAI responses.
+- Add a dedicated notebook on function-tool loops and multi-step workflows.
+- Add a file-search or mini-RAG notebook tied to a small sample document set.
+- Add lightweight mocked tests for more edge cases around tool outputs and validation failures.
