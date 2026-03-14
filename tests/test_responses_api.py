@@ -1,7 +1,12 @@
 import unittest
 from types import SimpleNamespace
+from unittest.mock import patch
 
-from utils.responses_api import extract_output_text, stream_text_deltas
+from utils.responses_api import (
+    create_json_response,
+    extract_output_text,
+    stream_text_deltas,
+)
 
 
 class FakeStream:
@@ -23,6 +28,47 @@ class FakeStream:
 
 
 class ResponsesApiTests(unittest.TestCase):
+    def test_create_json_response_uses_strict_schema_and_parses_result(self) -> None:
+        schema = {
+            "type": "object",
+            "properties": {
+                "name": {"type": "string"},
+                "priority": {"type": "string"},
+            },
+            "required": ["name", "priority"],
+            "additionalProperties": False,
+        }
+
+        with patch("utils.responses_api.create_text_response") as create_text_response_mock:
+            create_text_response_mock.return_value = (
+                '{"name": "Draft proposal", "priority": "high"}'
+            )
+
+            result = create_json_response(
+                "Extract the task.",
+                model="gpt-4.1-mini",
+                schema_name="task_summary",
+                schema=schema,
+            )
+
+        self.assertEqual(
+            result,
+            {"name": "Draft proposal", "priority": "high"},
+        )
+        create_text_response_mock.assert_called_once_with(
+            "Extract the task.",
+            model="gpt-4.1-mini",
+            client=None,
+            text={
+                "format": {
+                    "type": "json_schema",
+                    "name": "task_summary",
+                    "schema": schema,
+                    "strict": True,
+                }
+            },
+        )
+
     def test_extract_output_text_prefers_output_text(self) -> None:
         response = SimpleNamespace(
             output_text="hello",

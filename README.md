@@ -23,6 +23,7 @@ openai-responses-api-hub/
 |-- notebooks/
 |   |-- 01_basic_chatbot.ipynb
 |   |-- 02_tools_and_reasoning.ipynb
+|   |-- 03_structured_outputs.ipynb
 |   `-- test_openai_connection.ipynb
 |-- utils/
 |   |-- openai_client.py
@@ -85,13 +86,20 @@ openai-responses-api-hub/
 - optional custom calculator tool example
 - tool-call inspection
 
+`03_structured_outputs.ipynb`
+
+- strict JSON schema extraction
+- reusable `create_json_response(...)` workflow
+- pandas-friendly action-item tables
+- second example for support-ticket triage
+
 ## Roadmap
 
 The highest-value next notebooks are:
 
-1. Structured outputs and strict JSON schema parsing
-2. Richer multi-tool workflows with tool execution loops
-3. File search and a small RAG example
+1. Richer multi-tool workflows with tool execution loops
+2. File search and a small RAG example
+3. A lightweight model explorer or small app surface for demos
 
 ## Local Setup
 
@@ -118,6 +126,7 @@ Run notebooks:
 
 ```bash
 jupyter notebook notebooks/01_basic_chatbot.ipynb
+jupyter notebook notebooks/03_structured_outputs.ipynb
 ```
 
 ## Example
