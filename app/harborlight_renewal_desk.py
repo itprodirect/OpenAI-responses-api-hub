@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 import time
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from decimal import Decimal
 from typing import Any, Literal
 
@@ -27,6 +27,7 @@ from harborlight_responses.structured import parse_renewal_review
 from harborlight_responses.tool_loop import run_tool_loop
 
 Mode = Literal["Demo Fixture", "Live API"]
+ToolRequestPanel = dict[str, Any] | list[str]
 FICTIONAL_NOTICE = (
     "Fictional tutorial data only — no real people, customers, policies, or insurance advice."
 )
@@ -40,7 +41,7 @@ class DeskResult:
     mode_notice: str = ""
     request_input: str = ""
     model_selected: str = ""
-    tool_requested: str = ""
+    tool_requested: ToolRequestPanel = field(default_factory=list)
     validated_arguments: Any = None
     deterministic_output: Any = None
     structured_result: Any = None
@@ -99,7 +100,11 @@ def run_structured_workflow(mode: Mode, policy_id: str) -> dict[str, Any]:
         mode_notice=FIXTURE_LABEL if mode == "Demo Fixture" else "Live OpenAI API request.",
         request_input=note,
         model_selected=model,
-        tool_requested="No function tool — typed structured output",
+        tool_requested={
+            "type": "structured_output",
+            "function_tools": [],
+            "description": "Typed structured output; no function tool was requested.",
+        },
         deterministic_output=policy.model_dump(mode="json"),
         retrieved_evidence=[],
     )
@@ -157,10 +162,10 @@ def run_tool_workflow(mode: Mode, policy_id: str, days: int) -> dict[str, Any]:
                 selected.current_premium_cents,
                 selected.proposed_premium_cents,
             )
-            result.tool_requested = (
-                "list_upcoming_renewals; calculate_premium_change "
-                "(deterministic demo execution)"
-            )
+            result.tool_requested = [
+                "list_upcoming_renewals",
+                "calculate_premium_change",
+            ]
             result.validated_arguments = {
                 "list_upcoming_renewals": {"days": days},
                 "calculate_premium_change": {

@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import json
 import re
+import subprocess
+from functools import lru_cache
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -16,6 +18,7 @@ SKIP_PARTS = {
     ".pytest_cache",
     ".ruff_cache",
 }
+LOCAL_ONLY_PARTS = {".claude", ".ipynb_checkpoints", ".worktrees"}
 SKIP_PATHS = {
     Path("docs/FABLE_RECOMMENDATIONS.md"),
     Path("docs/history/REPO_REVIEW.md"),
@@ -25,18 +28,50 @@ SKIP_PATHS = {
 TEXT_SUFFIXES = {".py", ".md", ".toml", ".yml", ".yaml", ".json", ".csv", ".ipynb"}
 
 
+@lru_cache(maxsize=1)
+def _tracked_paths() -> frozenset[Path]:
+    completed = subprocess.run(
+        ["git", "ls-files", "-z"],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+    )
+    return frozenset(
+        Path(value)
+        for value in completed.stdout.decode("utf-8").split("\0")
+        if value
+    )
+
+
+def _is_untracked_local_path(relative: Path, tracked_paths: frozenset[Path]) -> bool:
+    return (
+        any(part in LOCAL_ONLY_PARTS for part in relative.parts)
+        and relative not in tracked_paths
+    )
+
+
 def active_text_files() -> list[Path]:
     files = []
+    tracked_paths = _tracked_paths()
     for path in ROOT.rglob("*"):
         if not path.is_file() or path.suffix.lower() not in TEXT_SUFFIXES:
             continue
         relative = path.relative_to(ROOT)
         if any(part in SKIP_PARTS or part.endswith(".egg-info") for part in relative.parts):
             continue
+        if _is_untracked_local_path(relative, tracked_paths):
+            continue
         if relative in SKIP_PATHS:
             continue
         files.append(path)
     return files
+
+
+def test_local_only_directories_do_not_hide_tracked_files() -> None:
+    for directory in LOCAL_ONLY_PARTS:
+        relative = Path(directory) / "example.md"
+        assert _is_untracked_local_path(relative, frozenset())
+        assert not _is_untracked_local_path(relative, frozenset({relative}))
 
 
 def test_no_committed_secrets_machine_paths_or_live_identifiers() -> None:
