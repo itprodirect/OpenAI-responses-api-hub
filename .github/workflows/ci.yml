@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.13"]
+
+    env:
+      OPENAI_API_KEY: ""
+      HARBORLIGHT_LIVE: "0"
+
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - name: Install project and development extras
+        run: python -m pip install -e ".[dev]"
+      - name: Lint
+        run: python -m ruff check .
+      - name: Test offline behavior
+        run: python -m pytest
+      - name: Execute five demo-mode lessons
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/harborlight-notebooks"
+          for notebook in notebooks/*.ipynb; do
+            python -m nbconvert \
+              --to notebook \
+              --execute "$notebook" \
+              --output "$(basename "$notebook")" \
+              --output-dir "$RUNNER_TEMP/harborlight-notebooks" \
+              --ExecutePreprocessor.timeout=120
+          done
+      - name: Import application without launching
+        run: python -c "import app.harborlight_renewal_desk"

@@ -1,0 +1,7 @@
+{
+  "source_repository": "https://github.com/itprodirect/Model-Context-Protocol-101",
+  "source_path": "src/harborlight_mcp/data/fictional_policies.csv",
+  "source_commit": "c872f1d46182bf191947a2477d4b0487f970c7f2",
+  "mirrored_on": "2026-07-14",
+  "runtime_note": "This copy is intentionally independent at runtime; MCP 101 is not required."
+}

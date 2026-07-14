@@ -1,8 +1,17 @@
-# .gitignore
 .venv/
+venv/
 .env
+.env.*
+!.env.example
 __pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
 .ipynb_checkpoints/
-
-*.pyc
+.notebook-output/
+build/
+dist/
+*.log
 .DS_Store
+Thumbs.db
