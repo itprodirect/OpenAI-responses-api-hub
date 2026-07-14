@@ -58,7 +58,7 @@ Modified by the mission:
 
 - Fable proposed four core lessons plus an MCP notebook capstone and postponed web search. Version one instead has the user-specified five core lessons, with hosted web search as lesson 5 and MCP as a separate optional example.
 - Fable recommended no committed notebook outputs. CI still starts from stripped notebooks, while execution artifacts are temporary; explanatory fixture values are stored as clearly labeled package data/markdown, never as live output.
-- Fable suggested a very narrow recorded app transcript. Demo mode remains narrow but executes real deterministic services and uses typed checked-in fixtures for model-facing portions.
+- Fable suggested a very narrow replay fixture. Demo mode remains narrow but executes real deterministic services and uses typed authored fixtures for model-facing portions.
 - The raw HTTP material is omitted from the core lesson and may be added only as a compact future appendix if it teaches a distinct concept.
 
 Intentionally postponed:

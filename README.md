@@ -64,6 +64,8 @@ Running the Python function is not enough. Until Python returns function_call_ou
 
 ## Tested quickstart
 
+**Live validation status (2026-07-14, America/New_York): PASS.** All eight required live capabilities have a confirmed successful path. Lesson 1 used `gpt-5.6-terra`; the typed-output, tool, state, hosted-search, and Renewal Desk checks used `gpt-5.6-luna`. Two initial typed-schema calls returned sanitized HTTP 400 `invalid_json_schema`; after the schema was narrowed to the supported strict subset, the live Renewal Desk structured workflow completed through the same `responses.parse` helper used by Lesson 2. One separate corrective Lesson 2 result was not captured because the local validation harness failed after the request, so that request was not repeated. No raw output, secret, response ID, or conversation ID was committed. See [release validation](docs/VALIDATION.md).
+
 Python 3.10 or newer is required. CI covers Python 3.10 and 3.13. Local release validation used Python 3.12, OpenAI Python SDK 2.45.0, Gradio 6.20.0, and MCP Python SDK 1.28.1.
 
 ### Windows PowerShell
@@ -94,7 +96,7 @@ Core imports do not require Gradio, Jupyter, pandas, or MCP. Install smaller cap
 
 Demo mode is the default for every notebook and for the application. It performs no OpenAI request and labels model-facing material:
 
-> Recorded demonstration fixture — no live OpenAI API call was made.
+> Authored demonstration fixture - no live OpenAI API call was made.
 
 Demo mode still loads and validates the packaged CSV, filters renewal windows, and calculates premium changes through the real deterministic services.
 
@@ -134,11 +136,11 @@ Advanced users can set OPENAI_DEFAULT_MODEL=gpt-5.6-sol. Model selection is visi
 
 | Lesson | Harborlight task | API concept | Offline behavior |
 |---|---|---|---|
-| [01 First Harborlight Response](notebooks/01_first_harborlight_response.ipynb) | Explain Fictional Beacon Books | OpenAI(), responses.create, instructions, input, output_text, metadata, usage | Recorded prose fixture plus deterministic record |
+| [01 First Harborlight Response](notebooks/01_first_harborlight_response.ipynb) | Explain Fictional Beacon Books | OpenAI(), responses.create, instructions, input, output_text, metadata, usage | Authored prose fixture plus deterministic record |
 | [02 Typed Renewal Review](notebooks/02_structured_renewal_review.ipynb) | Convert a messy renewal note | Pydantic, responses.parse, output_parsed, refusal/missing handling | Typed fixture; arithmetic rechecked |
 | [03 Function Tools](notebooks/03_function_tools.ipynb) | Find renewals and calculate a change | Strict schemas, multiple calls, local execution, function_call_output, bounded loop | Fake model boundary; real deterministic services |
 | [04 Conversation State](notebooks/04_conversation_state.ipynb) | Compare Beacon and Cedar, revise steps | previous_response_id and Conversations API | Explicit state fixture; no remote identifiers |
-| [05 Web Search and Evidence](notebooks/05_web_search_and_evidence.ipynb) | Build a hurricane-preparedness checklist | Hosted web_search, dated evidence, citations, interpretation | Clearly dated 2026-07-14 fixture |
+| [05 Web Search and Evidence](notebooks/05_web_search_and_evidence.ipynb) | Build a hurricane-preparedness checklist | Hosted web_search, dated evidence, citations, interpretation | Dated authored evidence fixture from 2026-07-14 |
 
 Execute all five without a key:
 
@@ -166,7 +168,7 @@ The interface shows the fictional-data/mode notices, request input, selected mod
 | Deterministic | Packaged CSV and pure Python services | Validated contracts; repeatable for the fixed snapshot |
 | Generated | OpenAI model | Wording and judgment may vary; validate important facts |
 | Retrieved | Hosted web search | Live and nondeterministic; inspect execution date, citations, and source quality |
-| Recorded fixture | Checked-in demonstration data | Historical example only; never label it current or live |
+| Authored fixture | Checked-in demonstration data | Historical example only; never label it current or live |
 
 No interface or notebook claims to reveal hidden reasoning. Concise generated rationale is ordinary output, not chain-of-thought.
 

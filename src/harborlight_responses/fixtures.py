@@ -1,4 +1,4 @@
-"""Small, dated, clearly labeled recorded fixtures for credential-free learning."""
+"""Small, dated, clearly labeled authored fixtures for credential-free learning."""
 
 from __future__ import annotations
 
@@ -7,13 +7,13 @@ from typing import Any
 
 from .schemas import RenewalReview
 
-FIXTURE_LABEL = "Recorded demonstration fixture — no live OpenAI API call was made."
+FIXTURE_LABEL = "Authored demonstration fixture - no live OpenAI API call was made."
 WEB_FIXTURE_DATE = "2026-07-14"
 
 FIRST_RESPONSE_FIXTURE = (
     "Fictional Beacon Books renews on July 10, 2026. Its proposed premium is $1,323.00, "
     "up $63.00 (5.00%) from $1,260.00. This deterministic policy data is fictional; the "
-    "wording shown here is a recorded model-output fixture."
+    "wording shown here is an authored demonstration fixture."
 )
 
 STRUCTURED_REVIEW_FIXTURE = RenewalReview(

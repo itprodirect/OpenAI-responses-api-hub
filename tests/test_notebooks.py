@@ -28,4 +28,4 @@ def test_lessons_default_to_fixture_mode() -> None:
     for name in EXPECTED_NOTEBOOKS:
         text = (Path("notebooks") / name).read_text(encoding="utf-8")
         assert "HARBORLIGHT_LIVE" in text
-        assert "Recorded demonstration fixture" in text or "FIXTURE_LABEL" in text
+        assert "Authored demonstration fixture" in text or "FIXTURE_LABEL" in text

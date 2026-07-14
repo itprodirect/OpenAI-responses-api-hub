@@ -6,8 +6,6 @@ import os
 from collections.abc import Mapping
 from dataclasses import dataclass
 
-from dotenv import load_dotenv
-
 MODEL_TIERS = {
     "economy": "gpt-5.6-luna",
     "balanced": "gpt-5.6-terra",
@@ -22,12 +20,6 @@ class ModelSelection:
     model: str
     tier: str | None
     source: str
-
-
-def load_local_environment() -> None:
-    """Explicitly load a local dotenv file; importing this module never does so."""
-
-    load_dotenv()
 
 
 def api_key_available(environ: Mapping[str, str] | None = None) -> bool:

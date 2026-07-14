@@ -72,6 +72,41 @@ def test_active_notebooks_have_no_committed_execution_output() -> None:
                 assert cell.get("outputs", []) == []
 
 
+def test_authored_fixtures_are_not_described_as_recorded_model_output() -> None:
+    forbidden = re.compile(
+        r"\brecorded "
+        r"(?:demonstration|fixture|model|generated|typed|output|facts|evidence|"
+        r"interpretation)",
+        re.IGNORECASE,
+    )
+    for path in active_text_files():
+        text = path.read_text(encoding="utf-8")
+        assert not forbidden.search(text), (
+            f"authored fixture has recorded-output provenance in {path.relative_to(ROOT)}"
+        )
+
+
+def test_active_notebook_source_has_no_known_encoding_corruption() -> None:
+    corrupt_title = re.compile(r"^# Lesson [1-5] \? ", re.MULTILINE)
+    known_substitutions = ("Renewal note ?", "explicit?but", "?current.?", "?today?")
+    for path in (ROOT / "notebooks").glob("*.ipynb"):
+        notebook = json.loads(path.read_text(encoding="utf-8"))
+        source = "\n".join(
+            "".join(cell.get("source", [])) for cell in notebook.get("cells", [])
+        )
+        assert not corrupt_title.search(source), f"corrupt lesson title in {path.name}"
+        assert "\ufffd" not in source, f"Unicode replacement character in {path.name}"
+        for substitution in known_substitutions:
+            assert substitution not in source, f"corrupt punctuation in {path.name}"
+
+
+def test_active_text_has_no_replacement_or_common_mojibake_characters() -> None:
+    mojibake = ("\ufffd", "â€”", "â€“", "â€™", "â€œ", "â€", "â†’", "Ã", "Â")
+    for path in active_text_files():
+        text = path.read_text(encoding="utf-8")
+        for marker in mojibake:
+            assert marker not in text, f"encoding corruption in {path.relative_to(ROOT)}"
+
 def test_no_shell_true_in_active_python() -> None:
     for path in active_text_files():
         if path.suffix == ".py":

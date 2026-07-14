@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from datetime import date
 from decimal import Decimal
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, WithJsonSchema, field_validator
 
 
 class StrictModel(BaseModel):
@@ -61,13 +61,13 @@ class RenewalReview(StrictModel):
 
     policy_id: str
     customer_label: str
-    renewal_date: date
-    current_premium_cents: int = Field(strict=True, gt=0)
-    proposed_premium_cents: int = Field(strict=True, gt=0)
-    percentage_change: Decimal
+    renewal_date: Annotated[date, WithJsonSchema({"type": "string"})]
+    current_premium_cents: int = Field(strict=True)
+    proposed_premium_cents: int = Field(strict=True)
+    percentage_change: Annotated[Decimal, WithJsonSchema({"type": "number"})]
     attention_level: Literal["routine", "review", "urgent"]
-    concise_summary: str = Field(min_length=1, max_length=500)
-    next_actions: list[str] = Field(min_length=1, max_length=5)
+    concise_summary: str
+    next_actions: list[str]
 
     @field_validator("policy_id")
     @classmethod
@@ -81,4 +81,25 @@ class RenewalReview(StrictModel):
     def review_customer_prefix(cls, value: str) -> str:
         if not value.startswith("Fictional "):
             raise ValueError("customer_label must start with 'Fictional '")
+        return value
+
+    @field_validator("current_premium_cents", "proposed_premium_cents")
+    @classmethod
+    def positive_premium_cents(cls, value: int) -> int:
+        if value <= 0:
+            raise ValueError("premium cents must be positive")
+        return value
+
+    @field_validator("concise_summary")
+    @classmethod
+    def concise_summary_length(cls, value: str) -> str:
+        if not 1 <= len(value) <= 500:
+            raise ValueError("concise_summary must contain 1 to 500 characters")
+        return value
+
+    @field_validator("next_actions")
+    @classmethod
+    def next_actions_length(cls, value: list[str]) -> list[str]:
+        if not 1 <= len(value) <= 5:
+            raise ValueError("next_actions must contain 1 to 5 items")
         return value

@@ -9,6 +9,12 @@ from app import harborlight_renewal_desk as desk
 from harborlight_responses.fixtures import FIXTURE_LABEL
 
 
+def test_fixture_label_describes_authored_provenance() -> None:
+    assert FIXTURE_LABEL == (
+        "Authored demonstration fixture - no live OpenAI API call was made."
+    )
+
+
 def test_demo_structured_mode_requires_no_key(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     result = desk.run_structured_workflow("Demo Fixture", "FIC-HLA-1002")

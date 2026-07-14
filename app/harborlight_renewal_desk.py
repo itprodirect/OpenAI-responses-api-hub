@@ -75,7 +75,7 @@ def _demo_review(policy_id: str) -> RenewalReview:
         percentage_change=Decimal(str(change["change_percent"])),
         attention_level=attention,
         concise_summary=(
-            "A recorded demonstration summary assembled from deterministic fictional data."
+            "An authored demonstration summary assembled from deterministic fictional data."
         ),
         next_actions=[
             "Review the fictional renewal record.",
@@ -107,7 +107,7 @@ def run_structured_workflow(mode: Mode, policy_id: str) -> dict[str, Any]:
         if mode == "Demo Fixture":
             review = _demo_review(policy_id)
             usage = {"input_tokens": None, "output_tokens": None, "total_tokens": None}
-            answer = "Recorded typed result; deterministic premium arithmetic was verified."
+            answer = "Authored fixture result; deterministic premium arithmetic was verified."
         else:
             require_api_key()
             client = OpenAI()
@@ -173,7 +173,7 @@ def run_tool_workflow(mode: Mode, policy_id: str, days: int) -> dict[str, Any]:
                 "selected_premium_change": change,
             }
             result.final_answer = (
-                f"Recorded fixture summary: {len(renewals['renewals'])} fictional policies "
+                f"Authored fixture summary: {len(renewals['renewals'])} fictional policies "
                 f"renew in the window; {selected.customer_label} has a "
                 f"{change['change_percent']:.2f}% proposed {change['direction']}."
             )

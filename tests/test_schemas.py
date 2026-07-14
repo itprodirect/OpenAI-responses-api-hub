@@ -26,6 +26,33 @@ def test_expected_renewal_review_schema() -> None:
     assert schema["additionalProperties"] is False
 
 
+def test_model_facing_schema_uses_supported_strict_subset() -> None:
+    schema_text = str(RenewalReview.model_json_schema())
+    for keyword in (
+        "anyOf",
+        "exclusiveMinimum",
+        "format",
+        "maxItems",
+        "maxLength",
+        "minItems",
+        "minLength",
+        "pattern",
+    ):
+        assert keyword not in schema_text
+
+
+def test_runtime_validation_remains_stricter_than_model_facing_schema() -> None:
+    data = STRUCTURED_REVIEW_FIXTURE.model_dump()
+    data["current_premium_cents"] = 0
+    with pytest.raises(ValidationError, match="positive"):
+        RenewalReview.model_validate(data)
+
+    data = STRUCTURED_REVIEW_FIXTURE.model_dump()
+    data["next_actions"] = []
+    with pytest.raises(ValidationError, match="1 to 5"):
+        RenewalReview.model_validate(data)
+
+
 def test_fixture_arithmetic_is_verified() -> None:
     result = verify_review_arithmetic(STRUCTURED_REVIEW_FIXTURE)
     assert result["change_percent"] == 5.0
