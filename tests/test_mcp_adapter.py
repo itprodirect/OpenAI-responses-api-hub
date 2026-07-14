@@ -133,5 +133,5 @@ def test_missing_server_behavior(monkeypatch: pytest.MonkeyPatch) -> None:
 
 def test_source_contains_no_shell_execution() -> None:
     source = __import__("inspect").getsource(mcp_adapter)
-    assert "shell=True" not in source
+    assert "shell" + "=True" not in source
     assert "subprocess" not in source
